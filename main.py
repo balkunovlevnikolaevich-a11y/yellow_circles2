@@ -1,30 +1,31 @@
+# main.py
 import sys
 import random
-from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtGui import QPainter, QColor
+from UI import Ui_MainWindow  # Импортируем наш новый класс интерфейса
 
 
-class MyWidget(QMainWindow):
+class MyWidget(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        # Загружаем дизайн из файла
-        uic.loadUi('UI.ui', self)
+        self.setupUi(self)  # Инициализируем интерфейс из класса
 
-        # Список для хранения данных о кругах (x, y, диаметр)
+        # Теперь храним (x, y, d, color)
         self.circles = []
-
-        # Подключаем кнопку
         self.pushButton.clicked.connect(self.add_circle)
 
     def add_circle(self):
-        # Генерируем случайный диаметр и координаты
         d = random.randint(20, 100)
         x = random.randint(0, self.width() - d)
-        y = random.randint(50, self.height() - d)  # Начинаем чуть ниже кнопки
+        y = random.randint(50, self.height() - d)
 
-        # Сохраняем и обновляем окно
-        self.circles.append((x, y, d))
+        # Генерируем случайный цвет
+        color = QColor(random.randint(0, 255),
+                       random.randint(0, 255),
+                       random.randint(0, 255))
+
+        self.circles.append((x, y, d, color))
         self.update()
 
     def paintEvent(self, event):
@@ -34,9 +35,8 @@ class MyWidget(QMainWindow):
         qp.end()
 
     def draw_circles(self, qp):
-        # Устанавливаем желтый цвет заливки
-        qp.setBrush(QColor(255, 255, 0))
-        for x, y, d in self.circles:
+        for x, y, d, color in self.circles:
+            qp.setBrush(color)
             qp.drawEllipse(x, y, d, d)
 
 
